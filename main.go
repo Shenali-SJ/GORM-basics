@@ -15,8 +15,8 @@ type Product struct {
 	Price uint
 }
 
-// User define default values
-type User struct {
+// UserCredit define default values
+type UserCredit struct {
 	gorm.Model
 	Name string
 	Age int `gorm:"default:18"`
@@ -56,41 +56,41 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	user1 := User{
+	user1 := UserCredit{
 		Name:     "Anna",
 		Age:      30,
 		Birthday: time.Now(),
 	}
 
-	user2 := User{
+	user2 := UserCredit{
 		Model:    gorm.Model{},
 		Name:     "Mindy",
 		Age:      29,
 		Birthday: time.Now(),
 	}
 
-	user3 := User{
+	user3 := UserCredit{
 		Model:    gorm.Model{},
 		Name:     "Barry",
 		Age:      25,
 		Birthday: time.Now(),
 	}
 
-	user4 := User{
+	user4 := UserCredit{
 		Model:    gorm.Model{},
 		Name:     "Rachel",
 		Age:      24,
 		Birthday: time.Now(),
 	}
 
-	user5 := User{
+	user5 := UserCredit{
 		Model:    gorm.Model{},
 		Name:     "Monica",
 		Age:      23,
 		Birthday: time.Now(),
 	}
 
-	user6 := User{
+	user6 := UserCredit{
 		Model:    gorm.Model{},
 		Name:     "Phoebe",
 		Age:      25,
@@ -98,7 +98,7 @@ func main() {
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&UserCredit{})
 
 	// 1. Create database and insert a record
 	result := db.Create(&user1)
@@ -117,7 +117,7 @@ func main() {
 	// 3. inserting large number of records
 
 	// 3.1 pass a slice to create function
-	users := []User{user4, user5, user6}
+	users := []UserCredit{user4, user5, user6}
 	db.Create(&users)
 
 	//get the pks of records of the slice
@@ -135,7 +135,7 @@ func main() {
 	//	AfterCreate
 
 	// 4. Create from Map
-	db.Model(&User{}).Create([]map[string]interface{} {
+	db.Model(&UserCredit{}).Create([]map[string]interface{} {
 		{"Name": "Chandler", "Age": 24},
 		{"Name": "Ross", "Age": 24},
 	})
@@ -158,7 +158,7 @@ func main() {
 	//db.Omit("CreditCard").Create(&cust1)
 
 	// checking functionality of default tag
-	user7 := User{
+	user7 := UserCredit{
 		Model:    gorm.Model{},
 		Name:     "Peter Pan",
 		Age:      10,
@@ -174,7 +174,7 @@ func main() {
 
 	//upsert/ On Conflict
 
-	user8 := User{
+	user8 := UserCredit{
 		Model:    gorm.Model{},
 		Name:     "Dilan",
 		Age:      32,
@@ -189,7 +189,7 @@ func main() {
 
 
 	//----------------------query---------------------
-	var user User
+	var user UserCredit
 
 	// 1. retrieve a single object
 
@@ -219,7 +219,7 @@ func main() {
 
 	// works bc model is specified
 	result2 := map[string]interface{}{}
-	db.Model(&User{}).First(&result2)
+	db.Model(&UserCredit{}).First(&result2)
 
 	// this way doesn't work with First
 	result3 := map[string]interface{}{}
@@ -231,15 +231,15 @@ func main() {
 
 	//using inline condition
 	//if ID is an int, all is fine. Else esp attention need to be given to avoid SQL injection
-	var userU2 User
+	var userU2 UserCredit
 	db.First(&userU2, "3")  // as a string
 	fmt.Println("ID 3 : ", userU2.Name)
 
-	var userU3 User
+	var userU3 UserCredit
 	db.First(&userU3, 2) // as an int
 	fmt.Println("ID 2 : ", userU3.Name)
 
-	var usersU1 []User
+	var usersU1 []UserCredit
 	db.Find(&usersU1, []int{4, 5, 6})
 	for _, u := range usersU1 {
 		fmt.Println(u.Name)
@@ -256,14 +256,14 @@ func main() {
 	fmt.Println()
 
 	// 4. string conditions
-	var userWhere User
+	var userWhere UserCredit
 	db.Where("Name = ?", "Rachel").Find(&userWhere)
 	fmt.Println("Where - ", userWhere.Name, userWhere.ID)
 
 	fmt.Println()
 
 	//all matching records
-	//var usersWhere []User
+	//var usersWhere []UserCredit
 	//db.Where("Name <> ? ", "Phoebe").Find(&usersWhere)
 	//for _, u := range usersWhere {
 	//	fmt.Println(u.Name)
@@ -273,12 +273,12 @@ func main() {
 	// where can also be used with struct and map, slice of oks
 
 	//struct
-	//db.Where(&User{"Mindy", "20"}).First(&user)
+	//db.Where(&UserCredit{"Mindy", "20"}).First(&user)
 
 	//to include zero values in a query condition, a map should be used
 
 	// 5. Inline condition
-	var usersInline []User
+	var usersInline []UserCredit
 	db.Find(&usersInline, "Name = ? ", "Monica")
 	for _, u := range usersInline {
 		fmt.Println("ID : ", u.ID, " Name : ", u.Name,  "Age : ", u.Age)
@@ -287,8 +287,8 @@ func main() {
 	fmt.Println()
 
 	//Plain SQL, pk(non integer type), struct, map can be used with inline conditions
-	var user23Age User
-	db.Find(&user23Age, User {Age: 23})
+	var user23Age UserCredit
+	db.Find(&user23Age, UserCredit{Age: 23})
 	fmt.Println("Age 23 : ", user23Age.Name)
 
 	fmt.Println()
@@ -296,7 +296,7 @@ func main() {
 	// 6.NOT
 	//works similar to where
 	//plain SQL, mp ,struct, slice can be used
-	var usersNot []User
+	var usersNot []UserCredit
 	db.Not(map[string]interface{}{"Name": []string{"Monica", "Chandler"}}).Find(&usersNot)
 	for _, u := range usersNot {
 		fmt.Println("Not : ", u.Name)
@@ -306,8 +306,8 @@ func main() {
 
 	// 7. OR
 	//plain SQL map, struct can be used
-	var usersOr []User
-	db.Where("Name = 'Rachel'").Or(User{Age: 23}).Find(&usersOr)
+	var usersOr []UserCredit
+	db.Where("Name = 'Rachel'").Or(UserCredit{Age: 23}).Find(&usersOr)
 	for _, u := range usersOr {
 		fmt.Println("OR : ", u.Name)
 	}
@@ -316,7 +316,7 @@ func main() {
 
 	// 8. SELECT - to select specific fields
 	//else will return all the fields
-	var usersSelect []User
+	var usersSelect []UserCredit
 	//query ca also be passed as a string slice
 	// string[]{"Name", "Age"}
 	db.Select("Name", "Age").Find(&usersSelect)
@@ -330,7 +330,7 @@ func main() {
 	// 9. Limit and Offset
 	// LIMIT- max number of records to retrieve
 	// OFFSET - number of records to skip before starting to return records
-	var usersLO []User
+	var usersLO []UserCredit
 	db.Limit(3).Offset(5).Find(&usersLO)
 	for _, u := range usersLO {
 		//note tha ID will be zero value bc we are not selecting that field in thr initial query
@@ -342,9 +342,9 @@ func main() {
 	// 10. GROUP BY and HAVING
 
 	// GROUP BY
-	var resultGroup []User
+	var resultGroup []UserCredit
 	// SELECT name, sum(age) as total FROM `users` WHERE name LIKE "group%" GROUP BY `name`
-	db.Model(&User{}).Select("Name, sum(Age) as total").Where("Name LIKE ?", "Ph%").Group("Name").Find(&resultGroup)
+	db.Model(&UserCredit{}).Select("Name, sum(Age) as total").Where("Name LIKE ?", "Ph%").Group("Name").Find(&resultGroup)
 	for _, u := range resultGroup {
 		//note tha ID will be zero value bc we are not selecting that field in thr initial query
 		fmt.Println("GROUP BY : ", u.ID, u.Name)
@@ -353,9 +353,9 @@ func main() {
 	fmt.Println()
 
 	//HAVING
-	var resultHaving []User
+	var resultHaving []UserCredit
 	// SELECT name, sum(age) as total FROM `users` GROUP BY `name` HAVING name = "group"
-	db.Model(&User{}).Select("Name, sum(Age) as total").Group("Name").Having("Name = ?", "Phoebe").Find(&resultHaving)
+	db.Model(&UserCredit{}).Select("Name, sum(Age) as total").Group("Name").Having("Name = ?", "Phoebe").Find(&resultHaving)
 	for _, u := range resultHaving {
 		//note tha ID will be zero value bc we are not selecting that field in thr initial query
 		fmt.Println("HAVING : ", u.ID, u.Name)
@@ -364,7 +364,7 @@ func main() {
 	fmt.Println()
 
 	// 11. DISTINCT
-	var resultDistinct []User
+	var resultDistinct []UserCredit
 	db.Distinct("Name", "Age").Order("Name, age desc").Find(&resultDistinct)
 	for _, u := range resultDistinct {
 		//note tha ID will be zero value bc we are not selecting that field in thr initial query
@@ -377,7 +377,7 @@ func main() {
 
 	// specify a struct fpr API usage which can select specific fields automatically
 	// check APIUser struct
-	db.Model(&User{}).Limit(10).Find(&APIUser{})
+	db.Model(&UserCredit{}).Limit(10).Find(&APIUser{})
 
 	// 13. Locking
 	db.Clauses(clause.Locking{Strength: "UPDATE"}).Find(&users)
@@ -401,16 +401,16 @@ func main() {
 
 	// 17. Find to Map
 	//var resultMap map[string]interface{}
-	//db.Model(&User{}).First(&resultMap, "id = ?", 1)
+	//db.Model(&UserCredit{}).First(&resultMap, "id = ?", 1)
 
 	// 18. FirstOrInt
 	// get first matched record or initialize with given conditions
 	//only works with map and struct
-	db.Where(User{Name: "Monica"}).FirstOrInit(&user5)
-	// user -> User{ID: 111, Name: "Monica", Age: 23}
+	db.Where(UserCredit{Name: "Monica"}).FirstOrInit(&user5)
+	// user -> UserCredit{ID: 111, Name: "Monica", Age: 23}
 
 	//db.FirstOrInit(&user, map[string]interface{}{"name": "jinzhu"})
-	//// user -> User{ID: 111, Name: "Jinzhu", Age: 18}
+	//// user -> UserCredit{ID: 111, Name: "Jinzhu", Age: 18}
 
 	// 19. FirstOrCreate
 	//Get first matched record or create a new one with given conditions
@@ -428,7 +428,7 @@ func main() {
 
 	// 23. scopes
 	// specify commonly used queries as method calls
-	var usersScopes []User
+	var usersScopes []UserCredit
 	db.Scopes(ageGreaterThan27).Find(&usersScopes)
 
 	for _, u := range usersScopes {
@@ -440,7 +440,7 @@ func main() {
 
 	// 24. Count - get matched record count
 	var count int64
-	db.Model(&User{}).Where("Name = ?", "Ross").Count(&count)
+	db.Model(&UserCredit{}).Where("Name = ?", "Ross").Count(&count)
 	fmt.Println("No of records with name 'Ross' : ", count)
 
 
@@ -454,7 +454,7 @@ func main() {
 	// 2. Updating multiple columns - updates
 	// use struct - only update non zero values
 	// or map[string]interface{}
-	db.Model(&user1).Updates(User{Name: "Mike", Age: 25})
+	db.Model(&user1).Updates(UserCredit{Name: "Mike", Age: 25})
 
 	//use SELECT and OMIT when u want to update selected fields or ignore some fields
 
@@ -492,8 +492,8 @@ func main() {
 	db.Where("Name = ?", "Barry").Delete(&user3)
 
 	// 3. delete with pks
-	db.Delete(&User{}, 7)
-	db.Delete(&User{}, []int{3,4})
+	db.Delete(&UserCredit{}, 7)
+	db.Delete(&UserCredit{}, []int{3,4})
 
 	// 4. delete hooks - BeforeDelete, AfterDelete
 
@@ -510,7 +510,7 @@ func main() {
 	// even if you are not using gorm.Model in struct still you can have a field Deleted with type gorm.DeletedAt
 
 	// 8. Find soft deleted records
-	var softDeleted []User
+	var softDeleted []UserCredit
 	db.Unscoped().Where("Age = 27").Find(&softDeleted)
 	for _, u := range softDeleted {
 		fmt.Println(u.Name, u.ID, u.Age)
@@ -540,7 +540,7 @@ func main() {
 	row.Scan()
 
 	//rows - example
-	//rows, err := db.Model(&User{}).Where("name = ?", "jinzhu").Select("name, age, email").Rows()
+	//rows, err := db.Model(&UserCredit{}).Where("name = ?", "jinzhu").Select("name, age, email").Rows()
 	//defer rows.Close()
 	//for rows.Next() {
 	//	rows.Scan(&name, &age, &email)
